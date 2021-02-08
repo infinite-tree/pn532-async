@@ -20,6 +20,9 @@ async def test():
     buzzer = machine.Pin(21, machine.Pin.OUT)
     buzzer.off()
 
+    # NOTE: on several of the esp32-wrover dev boards, the default uart2 pins
+    #       conflict with the psRam so the pn532 is plugged into two unused
+    #       pins instead.
     rf = PN532Uart(2, tx=22, rx=23, debug=DEBUG)
     await rf.SAM_configuration()
 
@@ -34,8 +37,8 @@ async def test():
             await asyncio.sleep(0.2)
             buzzer.off()
         except asyncio.TimeoutError:
-            # This is important to stop the reader from reporting cards after
-            # we are no longer waiting.
+            # NOTE: This is important to stop the reader from reporting cards after
+            #       we are no longer waiting.
             await rf.release_targets()
             print('timeout!')
 
